@@ -27,6 +27,7 @@ export default function CostCalculator() {
         estimatedHours: 0,
         employees: [],
       },
+      customPrice: 0,
     },
     {
       id: 2,
@@ -44,6 +45,7 @@ export default function CostCalculator() {
         estimatedHours: 0,
         employees: [],
       },
+      customPrice: 0,
     },
     {
       id: 3,
@@ -61,6 +63,7 @@ export default function CostCalculator() {
         estimatedHours: 0,
         employees: [],
       },
+      customPrice: 0,
     },
     {
       id: 4,
@@ -78,11 +81,13 @@ export default function CostCalculator() {
         estimatedHours: 0,
         employees: [],
       },
+      customPrice: 0,
     },
   ]);
 
   const [margin, setMargin] = useState(30);
   const [expandedProductLabor, setExpandedProductLabor] = useState(null);
+  const [showInsumos, setShowInsumos] = useState(false);
 
   const calculateLaborCost = (product) => {
     const { laborMethod, laborData, unitsPerBatch } = product;
@@ -135,7 +140,7 @@ export default function CostCalculator() {
 
   const updateProduct = (id, field, value) => {
     setProducts(products.map(p =>
-      p.id === id ? { ...p, [field]: field === 'unitsPerBatch' ? parseInt(value) || 0 : value } : p
+      p.id === id ? { ...p, [field]: field === 'unitsPerBatch' ? parseInt(value) || 0 : field === 'customPrice' ? parseFloat(value) || 0 : value } : p
     ));
   };
 
@@ -205,7 +210,7 @@ export default function CostCalculator() {
 
   const addProduct = () => {
     const newId = Math.max(...products.map(p => p.id), 0) + 1;
-    setProducts([...products, { id: newId, name: '', recipeItems: [], unitsPerBatch: 1, laborMethod: 'totalPerBatch', laborData: { totalPerBatch: 0, perUnit: 0, hourlyRate: 0, estimatedHours: 0, employees: [] } }]);
+    setProducts([...products, { id: newId, name: '', recipeItems: [], unitsPerBatch: 1, laborMethod: 'totalPerBatch', laborData: { totalPerBatch: 0, perUnit: 0, hourlyRate: 0, estimatedHours: 0, employees: [] }, customPrice: 0 }]);
   };
 
   const calculateCost = (productId) => {
@@ -223,6 +228,15 @@ export default function CostCalculator() {
   };
 
   const calculatePrice = (productId) => {
+    const product = products.find(p => p.id === productId);
+    if (!product) return 0;
+
+    // Si hay precio personalizado, usarlo
+    if (product.customPrice > 0) {
+      return product.customPrice;
+    }
+
+    // Si no, calcular con margen
     const cost = calculateCost(productId);
     return cost * (1 + margin / 100);
   };
@@ -255,94 +269,86 @@ export default function CostCalculator() {
 
         {/* Configuration Panel */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border-4 border-white">
-          <h2 className="text-3xl font-black text-blue-900 mb-8 text-center">⚙️ CONFIGURACIÓN</h2>
-          <div className="max-w-2xl mx-auto">
-            <div>
-              <div className="flex justify-between items-center mb-4">
-                <label className="text-lg font-black text-gray-800">MARGEN DE GANANCIA</label>
-                <span className="text-5xl font-black text-green-600">{margin}%</span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={margin}
-                onChange={(e) => setMargin(parseInt(e.target.value))}
-                className="w-full h-4 bg-green-200 rounded-lg appearance-none cursor-pointer accent-green-600"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Ingredients Table */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border-4 border-white">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-black text-purple-900">📦 INGREDIENTES</h2>
+            <h2 className="text-3xl font-black text-blue-900">⚙️ CONFIGURACIÓN</h2>
             <button
-              onClick={addIngredient}
-              className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl font-black text-lg shadow-lg transform hover:scale-105 transition"
+              onClick={() => setShowInsumos(!showInsumos)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-black text-lg shadow-lg transform hover:scale-105 transition"
             >
-              <Plus size={24} /> Agregar
+              {showInsumos ? '✕' : '📦'} INSUMOS
             </button>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-gradient-to-r from-purple-300 to-purple-200 border-b-4 border-purple-400">
-                  <th className="text-left py-4 px-4 font-black text-purple-900 text-lg">Ingrediente</th>
-                  <th className="text-left py-4 px-4 font-black text-purple-900 text-lg">Costo/Unidad</th>
-                  <th className="text-left py-4 px-4 font-black text-purple-900 text-lg">Unidad</th>
-                  <th className="text-center py-4 px-4 font-black text-purple-900 text-lg">Acción</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ingredients.map((ing, idx) => (
-                  <tr key={ing.id} className={`border-b-2 border-purple-100 ${idx % 2 === 0 ? 'bg-purple-50' : 'bg-white'} hover:bg-purple-100 transition`}>
-                    <td className="py-4 px-4">
+          {!showInsumos ? (
+            <div className="max-w-2xl mx-auto">
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <label className="text-lg font-black text-gray-800">MARGEN DE GANANCIA</label>
+                  <span className="text-5xl font-black text-green-600">{margin}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={margin}
+                  onChange={(e) => setMargin(parseInt(e.target.value))}
+                  className="w-full h-4 bg-green-200 rounded-lg appearance-none cursor-pointer accent-green-600"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="bg-blue-50 rounded-xl p-6 border-4 border-blue-300">
+              <h3 className="text-2xl font-black text-blue-900 mb-6">GESTIÓN DE INSUMOS</h3>
+              <div className="space-y-4">
+                {ingredients.map((ing) => (
+                  <div key={ing.id} className="bg-white rounded-lg p-4 border-2 border-blue-300 flex items-center gap-4">
+                    <div className="flex-1">
                       <input
                         type="text"
                         value={ing.name}
                         onChange={(e) => updateIngredient(ing.id, 'name', e.target.value)}
-                        className="w-full px-4 py-2 border-2 border-purple-300 rounded-lg text-gray-800 font-semibold focus:outline-none focus:border-purple-600"
-                        placeholder="Nombre"
+                        className="w-full px-3 py-2 border-2 border-blue-300 rounded-lg text-gray-800 font-bold text-lg focus:outline-none focus:border-blue-600 mb-2"
+                        placeholder="Nombre insumo"
                       />
-                    </td>
-                    <td className="py-4 px-4">
-                      <input
-                        type="number"
-                        value={ing.costPerUnit}
-                        onChange={(e) => updateIngredient(ing.id, 'costPerUnit', e.target.value)}
-                        className="w-full px-4 py-2 border-2 border-purple-300 rounded-lg text-gray-800 font-semibold focus:outline-none focus:border-purple-600"
-                        placeholder="0"
-                      />
-                    </td>
-                    <td className="py-4 px-4">
-                      <select
-                        value={ing.unit}
-                        onChange={(e) => updateIngredient(ing.id, 'unit', e.target.value)}
-                        className="w-full px-4 py-2 border-2 border-purple-300 rounded-lg text-gray-800 font-semibold focus:outline-none focus:border-purple-600"
-                      >
-                        <option>kg</option>
-                        <option>g</option>
-                        <option>l</option>
-                        <option>ml</option>
-                        <option>un</option>
-                      </select>
-                    </td>
-                    <td className="py-4 px-4 text-center">
-                      <button
-                        onClick={() => deleteIngredient(ing.id)}
-                        className="text-red-600 hover:text-red-800 hover:bg-red-100 p-3 rounded-lg transition transform hover:scale-110"
-                      >
-                        <Trash2 size={20} />
-                      </button>
-                    </td>
-                  </tr>
+                      <div className="grid grid-cols-2 gap-3">
+                        <input
+                          type="number"
+                          value={ing.costPerUnit}
+                          onChange={(e) => updateIngredient(ing.id, 'costPerUnit', e.target.value)}
+                          className="px-3 py-2 border-2 border-blue-300 rounded-lg text-gray-800 font-bold focus:outline-none focus:border-blue-600"
+                          placeholder="Costo"
+                          step="0.01"
+                        />
+                        <select
+                          value={ing.unit}
+                          onChange={(e) => updateIngredient(ing.id, 'unit', e.target.value)}
+                          className="px-3 py-2 border-2 border-blue-300 rounded-lg text-gray-800 font-bold focus:outline-none focus:border-blue-600"
+                        >
+                          <option>kg</option>
+                          <option>g</option>
+                          <option>l</option>
+                          <option>ml</option>
+                          <option>un</option>
+                        </select>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => deleteIngredient(ing.id)}
+                      className="text-red-600 hover:text-red-800 hover:bg-red-100 p-3 rounded-lg transition transform hover:scale-110"
+                    >
+                      <Trash2 size={24} />
+                    </button>
+                  </div>
                 ))}
-              </tbody>
-            </table>
-          </div>
+                <button
+                  onClick={addIngredient}
+                  className="w-full flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl font-black text-lg shadow-lg transform hover:scale-105 transition"
+                >
+                  <Plus size={24} /> Agregar Insumo
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Products Detail */}
@@ -406,6 +412,25 @@ export default function CostCalculator() {
                       ${calculatePrice(product.id).toFixed(2)}
                     </p>
                   </div>
+                </div>
+
+                {/* Custom Price Editor */}
+                <div className="bg-red-100 border-4 border-red-400 rounded-xl p-6 mb-4">
+                  <p className="font-black text-red-900 text-lg mb-3">✏️ EDITAR PRECIO DE VENTA (MANUAL)</p>
+                  <p className="text-sm text-red-800 mb-3">Si quieres usar un precio diferente al calculado, ingresa aquí. Deja en 0 para usar el cálculo automático.</p>
+                  <input
+                    type="number"
+                    value={product.customPrice}
+                    onChange={(e) => updateProduct(product.id, 'customPrice', e.target.value)}
+                    className="w-full px-6 py-3 border-4 border-red-400 rounded-lg text-gray-800 font-black text-2xl focus:outline-none focus:border-red-600"
+                    placeholder="Ingresa precio manual"
+                    step="0.01"
+                  />
+                  {product.customPrice > 0 && (
+                    <p className="text-sm text-red-900 font-bold mt-2">
+                      ⚠️ Usando precio manual: ${product.customPrice.toFixed(2)}
+                    </p>
+                  )}
                 </div>
 
                 {/* Labor Configuration Button */}
