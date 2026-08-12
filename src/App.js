@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trash2, Plus, ChevronDown, ChevronUp } from 'lucide-react';
+import { Trash2, Plus, ChevronDown, ChevronUp, Settings, TrendingUp, Zap } from 'lucide-react';
 
 export default function CostCalculator() {
   const [ingredients, setIngredients] = useState([
@@ -228,70 +228,84 @@ export default function CostCalculator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-rose-900 to-slate-900 p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-amber-900 mb-2">Portal del Viento</h1>
-        <p className="text-amber-700 mb-8">Calculadora de costos</p>
+        {/* Header */}
+        <div className="mb-12">
+          <div className="flex items-center gap-3 mb-2">
+            <Zap className="text-rose-400" size={32} />
+            <h1 className="text-5xl font-black text-white">Portal del Viento</h1>
+          </div>
+          <p className="text-rose-300 text-lg font-light">Calculadora inteligente de costos de producción</p>
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        {/* Dashboard Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+          {/* Productos Preview */}
+          <div className="lg:col-span-3">
+            <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 shadow-2xl border border-rose-500/20">
+              <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                <TrendingUp className="text-rose-400" size={28} />
+                Resumen de Productos
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {products.map((product) => (
+                  <div key={product.id} className="bg-gradient-to-br from-rose-500 to-orange-600 rounded-xl p-5 shadow-lg transform hover:scale-105 transition duration-300">
+                    <h3 className="font-bold text-white text-lg mb-3">{product.name}</h3>
+                    <div className="space-y-2">
+                      <div>
+                        <p className="text-rose-100 text-sm">Costo unitario</p>
+                        <p className="text-2xl font-black text-white">${calculateCost(product.id).toFixed(2)}</p>
+                      </div>
+                      <div className="pt-2 border-t border-white/20">
+                        <p className="text-rose-100 text-sm">Precio venta</p>
+                        <p className="text-xl font-bold text-yellow-200">${calculatePrice(product.id).toFixed(2)}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
           {/* Control Panel */}
-          <div className="lg:col-span-1 bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-bold text-amber-900 mb-4">Configuración</h2>
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 shadow-2xl border border-blue-500/20">
+            <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+              <Settings className="text-blue-400" size={24} />
+              Configuración
+            </h2>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Margen de ganancia: {margin}%
-                </label>
+                <div className="flex justify-between items-center mb-3">
+                  <label className="text-sm font-semibold text-white">Margen de ganancia</label>
+                  <span className="text-2xl font-black text-green-400">{margin}%</span>
+                </div>
                 <input
                   type="range"
                   min="0"
                   max="100"
                   value={margin}
                   onChange={(e) => setMargin(parseInt(e.target.value))}
-                  className="w-full"
+                  className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-green-400"
                 />
               </div>
 
-              <div className="bg-blue-50 rounded p-3 text-sm text-blue-800">
-                <p className="font-semibold mb-2">📋 Mano de obra</p>
-                <p>Configura por producto en la sección "Detalles". Puedes usar:</p>
-                <ul className="list-disc list-inside text-xs mt-1">
-                  <li>Costo total por lote</li>
-                  <li>Costo por unidad</li>
-                  <li>Costo horario</li>
-                  <li>Por empleado</li>
-                </ul>
+              <div className="bg-blue-500/10 border border-blue-400/30 rounded-lg p-4">
+                <p className="text-blue-300 text-sm font-semibold mb-2">📋 Mano de obra</p>
+                <p className="text-blue-200 text-xs leading-relaxed">Configura por producto. 4 métodos: total, unitario, horario o por empleado.</p>
               </div>
-            </div>
-          </div>
-
-          {/* Products Summary */}
-          <div className="lg:col-span-2 bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-bold text-amber-900 mb-4">Productos</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {products.map((product) => (
-                <div key={product.id} className="bg-gradient-to-br from-amber-50 to-orange-100 p-4 rounded">
-                  <h3 className="font-bold text-amber-900 mb-2">{product.name}</h3>
-                  <div className="text-sm text-gray-600 mb-1">
-                    <p>Costo: ${calculateCost(product.id).toFixed(2)}</p>
-                    <p className="font-semibold text-amber-700">
-                      Precio: ${calculatePrice(product.id).toFixed(2)}
-                    </p>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </div>
 
         {/* Ingredients Section */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold text-amber-900">Ingredientes</h2>
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 shadow-2xl border border-purple-500/20 mb-8">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-white">📦 Ingredientes</h2>
             <button
               onClick={addIngredient}
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-semibold"
+              className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-5 py-3 rounded-lg font-bold shadow-lg transform hover:scale-105 transition"
             >
               <Plus size={20} /> Agregar
             </button>
@@ -300,39 +314,39 @@ export default function CostCalculator() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b-2 border-amber-300">
-                  <th className="text-left py-3 px-4 font-semibold text-amber-900">Ingrediente</th>
-                  <th className="text-left py-3 px-4 font-semibold text-amber-900">Costo por unidad</th>
-                  <th className="text-left py-3 px-4 font-semibold text-amber-900">Unidad</th>
-                  <th className="py-3 px-4"></th>
+                <tr className="border-b-2 border-purple-500/50">
+                  <th className="text-left py-4 px-4 font-bold text-purple-300">Ingrediente</th>
+                  <th className="text-left py-4 px-4 font-bold text-purple-300">Costo/unidad</th>
+                  <th className="text-left py-4 px-4 font-bold text-purple-300">Unidad</th>
+                  <th className="py-4 px-4"></th>
                 </tr>
               </thead>
               <tbody>
                 {ingredients.map((ing) => (
-                  <tr key={ing.id} className="border-b border-gray-200 hover:bg-amber-50">
-                    <td className="py-3 px-4">
+                  <tr key={ing.id} className="border-b border-slate-700 hover:bg-slate-700/50 transition">
+                    <td className="py-4 px-4">
                       <input
                         type="text"
                         value={ing.name}
                         onChange={(e) => updateIngredient(ing.id, 'name', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded"
+                        className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-purple-500"
                         placeholder="Nombre"
                       />
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-4 px-4">
                       <input
                         type="number"
                         value={ing.costPerUnit}
                         onChange={(e) => updateIngredient(ing.id, 'costPerUnit', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded"
+                        className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-purple-500"
                         placeholder="Costo"
                       />
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-4 px-4">
                       <select
                         value={ing.unit}
                         onChange={(e) => updateIngredient(ing.id, 'unit', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded"
+                        className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
                       >
                         <option>kg</option>
                         <option>g</option>
@@ -341,10 +355,10 @@ export default function CostCalculator() {
                         <option>un</option>
                       </select>
                     </td>
-                    <td className="py-3 px-4 text-center">
+                    <td className="py-4 px-4 text-center">
                       <button
                         onClick={() => deleteIngredient(ing.id)}
-                        className="text-red-600 hover:text-red-800"
+                        className="text-red-400 hover:text-red-300 hover:bg-red-500/20 p-2 rounded-lg transition"
                       >
                         <Trash2 size={18} />
                       </button>
@@ -357,12 +371,12 @@ export default function CostCalculator() {
         </div>
 
         {/* Products Detail */}
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold text-amber-900">Detalles de productos</h2>
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 shadow-2xl border border-amber-500/20">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-2xl font-bold text-white">🎯 Detalles de Productos</h2>
             <button
               onClick={addProduct}
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-semibold"
+              className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-rose-600 hover:from-orange-600 hover:to-rose-700 text-white px-5 py-3 rounded-lg font-bold shadow-lg transform hover:scale-105 transition"
             >
               <Plus size={20} /> Agregar
             </button>
@@ -370,74 +384,70 @@ export default function CostCalculator() {
 
           <div className="space-y-6">
             {products.map((product) => (
-              <div key={product.id} className="border-2 border-amber-200 rounded-lg p-4">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex-1">
-                    <input
-                      type="text"
-                      value={product.name}
-                      onChange={(e) => updateProduct(product.id, 'name', e.target.value)}
-                      className="text-xl font-bold text-amber-900 border-0 border-b-2 border-amber-300 w-full px-2 py-1"
-                      placeholder="Nombre del producto"
-                    />
-                  </div>
+              <div key={product.id} className="bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-amber-500/50 rounded-xl p-6 shadow-lg hover:border-amber-400/80 transition">
+                <div className="flex justify-between items-start mb-6">
+                  <input
+                    type="text"
+                    value={product.name}
+                    onChange={(e) => updateProduct(product.id, 'name', e.target.value)}
+                    className="text-2xl font-bold text-white bg-transparent border-b-2 border-amber-400 px-2 py-1 flex-1 focus:outline-none focus:border-amber-300"
+                    placeholder="Nombre del producto"
+                  />
                   <button
                     onClick={() => deleteProduct(product.id)}
-                    className="text-red-600 hover:text-red-800 ml-4"
+                    className="text-red-400 hover:text-red-300 hover:bg-red-500/20 p-2 rounded-lg transition ml-4"
                   >
                     <Trash2 size={20} />
                   </button>
                 </div>
 
-                <div className="mb-4">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <div className="mb-6">
+                  <label className="block text-sm font-semibold text-slate-300 mb-2">
                     Unidades por lote:
                   </label>
                   <input
                     type="number"
                     value={product.unitsPerBatch}
                     onChange={(e) => updateProduct(product.id, 'unitsPerBatch', e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded w-32"
+                    className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white w-32 focus:outline-none focus:border-amber-500"
                   />
                 </div>
 
-                <div className="bg-gray-50 rounded p-3 mb-4">
-                  <div className="grid grid-cols-3 gap-4 text-sm mb-4">
-                    <div>
-                      <p className="text-gray-600">Costo unitario</p>
-                      <p className="text-xl font-bold text-amber-700">
-                        ${calculateCost(product.id).toFixed(2)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-gray-600">Margen</p>
-                      <p className="text-xl font-bold text-green-700">{margin}%</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-600">Precio venta</p>
-                      <p className="text-xl font-bold text-amber-700">
-                        ${calculatePrice(product.id).toFixed(2)}
-                      </p>
-                    </div>
+                <div className="grid grid-cols-3 gap-4 mb-6 bg-slate-600/50 rounded-lg p-4">
+                  <div className="text-center">
+                    <p className="text-slate-300 text-sm font-semibold">Costo unitario</p>
+                    <p className="text-3xl font-black text-amber-400">
+                      ${calculateCost(product.id).toFixed(2)}
+                    </p>
                   </div>
-                  
-                  <button
-                    onClick={() => setExpandedProductLabor(expandedProductLabor === product.id ? null : product.id)}
-                    className="w-full flex items-center justify-between text-sm bg-white border border-amber-300 rounded px-3 py-2 hover:bg-amber-50 text-amber-900 font-semibold"
-                  >
-                    <span>⚙️ Configurar mano de obra</span>
-                    {expandedProductLabor === product.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </button>
+                  <div className="text-center border-x border-slate-500">
+                    <p className="text-slate-300 text-sm font-semibold">Margen</p>
+                    <p className="text-3xl font-black text-green-400">{margin}%</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-slate-300 text-sm font-semibold">Precio venta</p>
+                    <p className="text-3xl font-black text-rose-300">
+                      ${calculatePrice(product.id).toFixed(2)}
+                    </p>
+                  </div>
                 </div>
 
+                <button
+                  onClick={() => setExpandedProductLabor(expandedProductLabor === product.id ? null : product.id)}
+                  className="w-full flex items-center justify-between bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold px-4 py-3 rounded-lg shadow-lg transition mb-4"
+                >
+                  <span>⚙️ Configurar mano de obra</span>
+                  {expandedProductLabor === product.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                </button>
+
                 {expandedProductLabor === product.id && (
-                  <div className="bg-yellow-50 border-2 border-yellow-200 rounded p-4 mb-4">
-                    <h4 className="font-bold text-amber-900 mb-3">Método de cálculo de mano de obra</h4>
+                  <div className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border-2 border-yellow-400/50 rounded-lg p-6 mb-4">
+                    <h4 className="font-bold text-white mb-4 text-lg">Método de cálculo</h4>
                     
                     <select
                       value={product.laborMethod}
                       onChange={(e) => updateProductLabor(product.id, 'laborMethod', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded mb-4 font-semibold"
+                      className="w-full px-4 py-3 bg-slate-700 border-2 border-yellow-400 rounded-lg text-white font-semibold mb-4 focus:outline-none focus:border-yellow-300"
                     >
                       <option value="totalPerBatch">💰 Costo TOTAL por lote</option>
                       <option value="perUnit">🔢 Costo por UNIDAD</option>
@@ -447,18 +457,18 @@ export default function CostCalculator() {
 
                     {product.laborMethod === 'totalPerBatch' && (
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-white mb-2">
                           Costo total para este lote de {product.unitsPerBatch} unidades:
                         </label>
                         <input
                           type="number"
                           value={product.laborData.totalPerBatch}
                           onChange={(e) => updateLaborData(product.id, 'totalPerBatch', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded"
+                          className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-yellow-400"
                           placeholder="Ej: 100"
                           step="0.01"
                         />
-                        <p className="text-xs text-gray-600 mt-1">
+                        <p className="text-xs text-yellow-300 mt-2">
                           = ${(product.laborData.totalPerBatch / product.unitsPerBatch).toFixed(2)} por unidad
                         </p>
                       </div>
@@ -466,18 +476,18 @@ export default function CostCalculator() {
 
                     {product.laborMethod === 'perUnit' && (
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-white mb-2">
                           Costo por unidad:
                         </label>
                         <input
                           type="number"
                           value={product.laborData.perUnit}
                           onChange={(e) => updateLaborData(product.id, 'perUnit', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded"
+                          className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-yellow-400"
                           placeholder="Ej: 5"
                           step="0.01"
                         />
-                        <p className="text-xs text-gray-600 mt-1">
+                        <p className="text-xs text-yellow-300 mt-2">
                           = ${(product.laborData.perUnit * product.unitsPerBatch).toFixed(2)} para el lote
                         </p>
                       </div>
@@ -486,32 +496,32 @@ export default function CostCalculator() {
                     {product.laborMethod === 'hourly' && (
                       <div className="space-y-3">
                         <div>
-                          <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          <label className="block text-sm font-semibold text-white mb-2">
                             Tarifa horaria ($):
                           </label>
                           <input
                             type="number"
                             value={product.laborData.hourlyRate}
                             onChange={(e) => updateLaborData(product.id, 'hourlyRate', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded"
+                            className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-yellow-400"
                             placeholder="Ej: 500"
                             step="0.01"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          <label className="block text-sm font-semibold text-white mb-2">
                             Horas estimadas:
                           </label>
                           <input
                             type="number"
                             value={product.laborData.estimatedHours}
                             onChange={(e) => updateLaborData(product.id, 'estimatedHours', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded"
+                            className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-yellow-400"
                             placeholder="Ej: 2.5"
                             step="0.1"
                           />
                         </div>
-                        <p className="text-xs text-gray-600 bg-white p-2 rounded">
+                        <p className="text-xs text-yellow-300 bg-slate-700 p-2 rounded">
                           Total: ${(product.laborData.hourlyRate * product.laborData.estimatedHours).toFixed(2)}
                         </p>
                       </div>
@@ -520,20 +530,20 @@ export default function CostCalculator() {
                     {product.laborMethod === 'employees' && (
                       <div className="space-y-3">
                         {product.laborData.employees.map((emp) => (
-                          <div key={emp.id} className="bg-white p-3 rounded border border-gray-300">
+                          <div key={emp.id} className="bg-slate-700 p-3 rounded-lg border border-slate-600">
                             <div className="grid grid-cols-4 gap-2 mb-2">
                               <input
                                 type="text"
                                 value={emp.name}
                                 onChange={(e) => updateEmployee(product.id, emp.id, 'name', e.target.value)}
-                                className="col-span-2 px-2 py-1 border border-gray-300 rounded text-sm"
-                                placeholder="Nombre empleado"
+                                className="col-span-2 px-2 py-1 bg-slate-600 border border-slate-500 rounded text-sm text-white focus:outline-none focus:border-yellow-400"
+                                placeholder="Nombre"
                               />
                               <input
                                 type="number"
                                 value={emp.hours}
                                 onChange={(e) => updateEmployee(product.id, emp.id, 'hours', e.target.value)}
-                                className="px-2 py-1 border border-gray-300 rounded text-sm"
+                                className="px-2 py-1 bg-slate-600 border border-slate-500 rounded text-sm text-white focus:outline-none focus:border-yellow-400"
                                 placeholder="Horas"
                                 step="0.1"
                               />
@@ -541,18 +551,18 @@ export default function CostCalculator() {
                                 type="number"
                                 value={emp.hourlyRate}
                                 onChange={(e) => updateEmployee(product.id, emp.id, 'hourlyRate', e.target.value)}
-                                className="px-2 py-1 border border-gray-300 rounded text-sm"
+                                className="px-2 py-1 bg-slate-600 border border-slate-500 rounded text-sm text-white focus:outline-none focus:border-yellow-400"
                                 placeholder="$/h"
                                 step="0.01"
                               />
                             </div>
                             <div className="flex justify-between items-center text-xs">
-                              <span className="text-gray-600">
+                              <span className="text-yellow-300 font-semibold">
                                 ${(emp.hours * emp.hourlyRate).toFixed(2)}
                               </span>
                               <button
                                 onClick={() => deleteEmployee(product.id, emp.id)}
-                                className="text-red-600 hover:text-red-800"
+                                className="text-red-400 hover:text-red-300"
                               >
                                 <Trash2 size={14} />
                               </button>
@@ -561,11 +571,11 @@ export default function CostCalculator() {
                         ))}
                         <button
                           onClick={() => addEmployee(product.id)}
-                          className="w-full text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded"
+                          className="w-full text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition"
                         >
                           + Agregar empleado
                         </button>
-                        <p className="text-xs text-gray-600 bg-white p-2 rounded">
+                        <p className="text-xs text-yellow-300 bg-slate-700 p-2 rounded font-semibold">
                           Total: ${product.laborData.employees.reduce((sum, e) => sum + (e.hours * e.hourlyRate), 0).toFixed(2)}
                         </p>
                       </div>
@@ -573,16 +583,16 @@ export default function CostCalculator() {
                   </div>
                 )}
 
-                <div className="bg-amber-50 rounded p-3">
-                  <h4 className="font-semibold text-amber-900 mb-3">Receta</h4>
-                  <div className="space-y-2">
+                <div className="bg-gradient-to-br from-rose-500/20 to-orange-500/20 border-2 border-rose-400/50 rounded-lg p-5">
+                  <h4 className="font-bold text-white mb-4">🧪 Receta</h4>
+                  <div className="space-y-3">
                     {product.recipeItems.length === 0 ? (
-                      <p className="text-gray-500 text-sm">Sin ingredientes</p>
+                      <p className="text-slate-400 text-sm italic">Sin ingredientes agregados</p>
                     ) : (
                       product.recipeItems.map((item) => {
                         const ingredient = ingredients.find(i => i.id === item.ingredientId);
                         return (
-                          <div key={item.ingredientId} className="flex items-center gap-3">
+                          <div key={item.ingredientId} className="flex items-center gap-2 bg-slate-700 p-2 rounded">
                             <select
                               value={item.ingredientId}
                               onChange={(e) =>
@@ -592,7 +602,7 @@ export default function CostCalculator() {
                                   item.quantity
                                 )
                               }
-                              className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
+                              className="flex-1 px-2 py-1 bg-slate-600 border border-slate-500 rounded text-xs text-white focus:outline-none focus:border-rose-400"
                             >
                               {ingredients.map((ing) => (
                                 <option key={ing.id} value={ing.id}>
@@ -606,11 +616,11 @@ export default function CostCalculator() {
                               onChange={(e) =>
                                 updateRecipeItem(product.id, item.ingredientId, e.target.value)
                               }
-                              className="w-24 px-2 py-1 border border-gray-300 rounded text-sm"
-                              placeholder="Cantidad"
+                              className="w-20 px-2 py-1 bg-slate-600 border border-slate-500 rounded text-xs text-white focus:outline-none focus:border-rose-400"
+                              placeholder="Cant"
                               step="0.01"
                             />
-                            <span className="text-sm text-gray-600 w-12">{ingredient?.unit || 'un'}</span>
+                            <span className="text-xs text-slate-300 w-10">{ingredient?.unit || 'un'}</span>
                             <button
                               onClick={() =>
                                 setProducts(
@@ -626,9 +636,9 @@ export default function CostCalculator() {
                                   )
                                 )
                               }
-                              className="text-red-600 hover:text-red-800"
+                              className="text-red-400 hover:text-red-300 p-1"
                             >
-                              <Trash2 size={16} />
+                              <Trash2 size={14} />
                             </button>
                           </div>
                         );
@@ -650,7 +660,7 @@ export default function CostCalculator() {
                         )
                       );
                     }}
-                    className="mt-3 text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
+                    className="mt-3 w-full text-sm bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-4 py-2 rounded-lg font-semibold transition"
                   >
                     + Agregar ingrediente
                   </button>
